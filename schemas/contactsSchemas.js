@@ -9,5 +9,5 @@ export const createContactSchema = Joi.object({
 export const updateContactSchema = Joi.object({
   name: Joi.string().regex(/[a-zA-Z]+/),
   email: Joi.string().email(),
-  phone: Joi.string().regex(/^[+\d()-]+$/),
+  phone: Joi.string().regex(/^[+0-9()\-.\s]+$/),
 });
