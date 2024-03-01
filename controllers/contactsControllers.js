@@ -1,10 +1,7 @@
 import { json } from "express";
 import * as contactsService from "../services/contactsServices.js";
 import HttpError from "../helpers/HttpError.js";
-import {
-  createContactSchema,
-  updateContactSchema,
-} from "../schemas/contactsSchemas.js";
+
 import ctrlWrapper from "../helpers/ctrlWrapper.js";
 
 export const getAllContacts = ctrlWrapper(async (req, res) => {
@@ -33,10 +30,6 @@ export const deleteContact = ctrlWrapper(async (req, res) => {
 
 export const createContact = ctrlWrapper(async (req, res) => {
   const { name, email, phone } = req.body;
-  const { error } = createContactSchema.validate(req.body);
-  if (error) {
-    throw HttpError(400, error.message);
-  }
 
   const result = await contactsService.addContact(name, email, phone);
 
@@ -48,9 +41,6 @@ export const updateContact = ctrlWrapper(async (req, res) => {
   if (!Object.keys(req.body).length) {
     throw HttpError(400, "Body must have at least one field");
   }
-
-  await updateContactSchema.validateAsync(req.body);
-
   const result = await contactsService.updateContact(id, req.body);
   if (!result) {
     throw HttpError(404);
