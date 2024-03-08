@@ -57,9 +57,7 @@ export const updateContact = ctrlWrapper(async (req, res) => {
 export const updateContactStatus = ctrlWrapper(async (req, res) => {
   const { contactId } = req.params;
   const { favorite } = req.body;
-  const result = await contactsService.updateStatusContact(contactId, {
-    favorite,
-  });
+  const result = await contactsService.updateStatusContact(contactId, { favorite });
   if (!result) {
     throw HttpError(404);
   }
