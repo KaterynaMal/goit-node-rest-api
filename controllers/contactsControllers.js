@@ -29,9 +29,14 @@ export const deleteContact = ctrlWrapper(async (req, res) => {
 });
 
 export const createContact = ctrlWrapper(async (req, res) => {
-  const { name, email, phone } = req.body;
+  const { name, email, phone, favorite } = req.body;
 
-  const result = await contactsService.addContact(name, email, phone);
+  const result = await contactsService.addContact({
+    name,
+    email,
+    phone,
+    favorite,
+  });
 
   res.status(201).json(result);
 });
@@ -42,6 +47,17 @@ export const updateContact = ctrlWrapper(async (req, res) => {
     throw HttpError(400, "Body must have at least one field");
   }
   const result = await contactsService.updateContact(id, req.body);
+  if (!result) {
+    throw HttpError(404);
+  }
+
+  res.json(result);
+});
+
+export const updateContactStatus = ctrlWrapper(async (req, res) => {
+  const { id } = req.params;
+  const { favorite } = req.body;
+  const result = await contactsService.updateStatusContact(id, { favorite });
   if (!result) {
     throw HttpError(404);
   }
