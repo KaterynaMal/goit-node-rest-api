@@ -67,4 +67,4 @@ const logout = ctrlWrapper(async (req, res) => {
   res.json({ message: "Signout success" });
 });
 
-export default { signup, login, getCurrent, logout };
+export default { signup, login, getCurrent, logout, updateUserSubscription };

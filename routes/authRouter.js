@@ -6,8 +6,11 @@ import authMiddleware from "../middlewares/authMiddleware.js";
 
 const authRouter = express.Router();
 
-
-authRouter.post("/register", validateBody(userSignupSchema), authController.signup);
+authRouter.post(
+  "/register",
+  validateBody(userSignupSchema),
+  authController.signup
+);
 
 authRouter.post("/login", validateBody(userSigninSchema), authController.login);
 

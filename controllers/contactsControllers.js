@@ -10,7 +10,6 @@ export const getAllContacts = ctrlWrapper(async (req, res) => {
   const skip = (page - 1) * limit;
 
   const result = await contactsService.listContacts({ owner }, { skip, limit });
-
   res.json(result);
 });
 

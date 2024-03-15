@@ -1,32 +1,32 @@
 import { Schema, model } from "mongoose";
 import { handleSaveError, setUpdateSettings } from "./hooks.js";
 import { emailRegex } from "../constants/user-constants.js";
-// import { passwordRegex } from "../constants/user-constants.js";
 
 const userSchema = new Schema(
-    {
-  password: {
-            type: String,
-     
-    required: [true, 'Password is required'],
-  },
-  email: {
+  {
+    password: {
+      type: String,
+
+      required: [true, "Password is required"],
+    },
+    email: {
       type: String,
       match: emailRegex,
-    required: [true, 'Email is required'],
-    unique: true,
+      required: [true, "Email is required"],
+      unique: true,
+    },
+    subscription: {
+      type: String,
+      enum: ["starter", "pro", "business"],
+      default: "starter",
+    },
+    token: {
+      type: String,
+      default: null,
+    },
   },
-  subscription: {
-    type: String,
-    enum: ["starter", "pro", "business"],
-    default: "starter"
-  },
-  token: {
-    type: String,
-    default: null,
-  },
-}, {versionKey: false, timestamps: true}
-)
+  { versionKey: false, timestamps: true }
+);
 
 userSchema.post("save", handleSaveError);
 
