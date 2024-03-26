@@ -4,10 +4,13 @@ import validateBody from "../helpers/validateBody.js";
 import { userSignupSchema, userSigninSchema } from "../schemas/usersSchemas.js";
 import authMiddleware from "../middlewares/authMiddleware.js";
 
+import upload from "../middlewares/upload.js";
+
 const authRouter = express.Router();
 
 authRouter.post(
   "/register",
+  upload.single("avatarURL"),
   validateBody(userSignupSchema),
   authController.signup
 );

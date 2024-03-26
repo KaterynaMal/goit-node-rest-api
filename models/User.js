@@ -6,7 +6,6 @@ const userSchema = new Schema(
   {
     password: {
       type: String,
-
       required: [true, "Password is required"],
     },
     email: {
@@ -24,6 +23,9 @@ const userSchema = new Schema(
       type: String,
       default: null,
     },
+    avatarURL: {
+       type: String,
+     }
   },
   { versionKey: false, timestamps: true }
 );

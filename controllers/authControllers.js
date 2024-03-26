@@ -1,4 +1,8 @@
 import jwt from "jsonwebtoken";
+import fs from "fs/promises";
+import path from "path";
+import gravatar from "gravatar";
+import jimp from "jimp";
 
 import HttpError from "../helpers/HttpError.js";
 import ctrlWrapper from "../helpers/ctrlWrapper.js";
@@ -7,18 +11,36 @@ import * as authServices from "../services/authServices.js";
 
 const { JWT_SECRET } = process.env;
 
+// const avatarsPath = path.resolve("public", "avatars");
+
 const signup = ctrlWrapper(async (req, res) => {
   const { email } = req.body;
+
+  const avatarURL = gravatar.url(email);
+
+  // const { path: oldPath, filename } = req.file;
+  // const newPath = path.join(avatarsPath, filename);
+
+  // await fs.rename(oldPath, newPath);
+
+  // const image = await jimp.read(newPath);
+  // await image.resize(250, 250).writeAsync(newPath);
+
+  // const avatar = path.join("avatars", filename);
+
   const user = await authServices.findUser({ email });
   if (user) {
     throw HttpError(409, "Email in use");
   }
 
   const newUser = await authServices.signup(req.body);
+  // const newUser = await authServices.signup(req.body, avatar);
 
   res.status(201).json({
     email: newUser.email,
     subscription: newUser.subscription,
+    avatarURL: avatarURL,
+    //  avatarURL: `/avatars/${filename}`,
   });
 });
 
@@ -67,4 +89,4 @@ const logout = ctrlWrapper(async (req, res) => {
   res.json({ message: "Signout success" });
 });
 
-export default { signup, login, getCurrent, logout, };
+export default { signup, login, getCurrent, logout };
