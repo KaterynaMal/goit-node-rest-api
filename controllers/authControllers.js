@@ -35,9 +35,9 @@ const signup = ctrlWrapper(async (req, res) => {
 const updateAvatar = ctrlWrapper(async (req, res) => {
   // const { email } = req.body;
   // const avatarURL = gravatar.url(email);
-  // const { _id: owner } = req.user;
+  const { _id: owner } = req.user;
 
-  // console.log(avatarURL);
+ 
 
   const { path: oldPath, filename } = req.file;
   const newPath = path.join(avatarsPath, filename);
