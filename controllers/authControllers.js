@@ -33,11 +33,7 @@ const signup = ctrlWrapper(async (req, res) => {
 });
 
 const updateAvatar = ctrlWrapper(async (req, res) => {
-  // const { email } = req.body;
-  // const avatarURL = gravatar.url(email);
   const { _id: owner } = req.user;
-
- 
 
   const { path: oldPath, filename } = req.file;
   const newPath = path.join(avatarsPath, filename);
@@ -59,7 +55,7 @@ const updateAvatar = ctrlWrapper(async (req, res) => {
     throw HttpError(401, "Not authorized");
   }
 
-  res.status(200).json(result);
+  res.status(200).json({ avatarURL });
 });
 
 const login = ctrlWrapper(async (req, res) => {

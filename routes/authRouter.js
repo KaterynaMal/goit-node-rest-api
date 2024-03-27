@@ -20,6 +20,6 @@ authRouter.get("/current", authMiddleware, authController.getCurrent);
 
 authRouter.post("/logout", authMiddleware, authController.logout);
 
-authRouter.patch("/avatars", upload.single("avatarURL"), authMiddleware, authController.updateAvatar);
+authRouter.patch("/avatars", upload.single("avatar"), authMiddleware, authController.updateAvatar);
 
 export default authRouter;
