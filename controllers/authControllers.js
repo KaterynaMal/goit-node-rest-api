@@ -11,37 +11,53 @@ import * as authServices from "../services/authServices.js";
 
 const { JWT_SECRET } = process.env;
 
-// const avatarsPath = path.resolve("public", "avatars");
+const avatarsPath = path.resolve("public", "avatars");
 
 const signup = ctrlWrapper(async (req, res) => {
   const { email } = req.body;
 
   const avatarURL = gravatar.url(email);
 
-  // const { path: oldPath, filename } = req.file;
-  // const newPath = path.join(avatarsPath, filename);
-
-  // await fs.rename(oldPath, newPath);
-
-  // const image = await jimp.read(newPath);
-  // await image.resize(250, 250).writeAsync(newPath);
-
-  // const avatar = path.join("avatars", filename);
-
   const user = await authServices.findUser({ email });
   if (user) {
     throw HttpError(409, "Email in use");
   }
 
-  const newUser = await authServices.signup(req.body);
-  // const newUser = await authServices.signup(req.body, avatar);
+  const newUser = await authServices.signup(req.body, avatarURL);
 
   res.status(201).json({
     email: newUser.email,
     subscription: newUser.subscription,
-    avatarURL: avatarURL,
-    //  avatarURL: `/avatars/${filename}`,
+    avatarURL,
   });
+});
+
+const updateAvatar = ctrlWrapper(async (req, res) => {
+  const { email } = req.body;
+  const avatarURL = gravatar.url(email);
+  const { _id: owner } = req.user;
+
+  console.log(avatarURL);
+
+  const { path: oldPath, filename } = req.file;
+  const newPath = path.join(avatarsPath, filename);
+
+  await fs.rename(oldPath, newPath);
+
+  const image = await jimp.read(newPath);
+  await image.resize(250, 250).writeAsync(newPath);
+
+  const avatar = path.join("avatars", filename);
+  const result = await authServices.updateOneAvatar(
+    { _id: owner },
+    { avatarURL }
+  );
+
+  if (!result) {
+    throw HttpError(401, "Not authorized");
+  }
+
+  res.status(200).json({ avatar: `/avatars/${filename}` });
 });
 
 const login = ctrlWrapper(async (req, res) => {
@@ -89,4 +105,4 @@ const logout = ctrlWrapper(async (req, res) => {
   res.json({ message: "Signout success" });
 });
 
-export default { signup, login, getCurrent, logout };
+export default { signup, login, getCurrent, logout, updateAvatar };
