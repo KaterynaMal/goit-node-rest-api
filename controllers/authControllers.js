@@ -33,6 +33,14 @@ const signup = ctrlWrapper(async (req, res) => {
 });
 
 const updateAvatar = ctrlWrapper(async (req, res) => {
+ if (!req.user) {
+    throw HttpError(401, "Not authorized");
+  };
+
+   if (!req.file) {
+    throw HttpError(400, "No file uploaded");
+  };
+
   const { _id: owner } = req.user;
 
   const { path: oldPath, filename } = req.file;
@@ -51,9 +59,7 @@ const updateAvatar = ctrlWrapper(async (req, res) => {
   );
   console.log(result);
 
-  if (!req.user) {
-    throw HttpError(401, "Not authorized");
-  }
+ 
 
   res.status(200).json({ avatarURL });
 });
