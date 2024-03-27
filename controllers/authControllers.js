@@ -40,12 +40,13 @@ const updateAvatar = ctrlWrapper(async (req, res) => {
   console.log(avatarURL);
 
   const { path: oldPath, filename } = req.file;
+
   const newPath = path.join(avatarsPath, filename);
 
-  await fs.rename(oldPath, newPath);
-
-  const image = await jimp.read(newPath);
+  const image = await jimp.read(oldPath);
   await image.resize(250, 250).writeAsync(newPath);
+
+  await fs.rename(oldPath, newPath);
 
   const avatar = path.join("avatars", filename);
   const result = await authServices.updateOneAvatar(
@@ -57,7 +58,8 @@ const updateAvatar = ctrlWrapper(async (req, res) => {
     throw HttpError(401, "Not authorized");
   }
 
-  res.status(200).json({ avatar: `/avatars/${filename}` });
+  res.status(200).json(avatarURL);
+  // { avatar: `/avatars/${filename}` }
 });
 
 const login = ctrlWrapper(async (req, res) => {
