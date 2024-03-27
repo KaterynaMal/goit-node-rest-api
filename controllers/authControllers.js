@@ -33,33 +33,33 @@ const signup = ctrlWrapper(async (req, res) => {
 });
 
 const updateAvatar = ctrlWrapper(async (req, res) => {
-  const { email } = req.body;
-  const avatarURL = gravatar.url(email);
-  const { _id: owner } = req.user;
+  // const { email } = req.body;
+  // const avatarURL = gravatar.url(email);
+  // const { _id: owner } = req.user;
 
-  console.log(avatarURL);
+  // console.log(avatarURL);
 
   const { path: oldPath, filename } = req.file;
-
   const newPath = path.join(avatarsPath, filename);
 
   const image = await jimp.read(oldPath);
-  await image.resize(250, 250).writeAsync(newPath);
+  await image.resize(250, 250).writeAsync(oldPath);
 
   await fs.rename(oldPath, newPath);
 
-  const avatar = path.join("avatars", filename);
+  const avatarURL = `/avatars/${filename}`;
+
   const result = await authServices.updateOneAvatar(
     { _id: owner },
     { avatarURL }
   );
+  console.log(result);
 
-  if (!result) {
+  if (!req.user) {
     throw HttpError(401, "Not authorized");
   }
 
-  res.status(200).json(avatarURL);
-  // { avatar: `/avatars/${filename}` }
+  res.status(200).json(result);
 });
 
 const login = ctrlWrapper(async (req, res) => {
