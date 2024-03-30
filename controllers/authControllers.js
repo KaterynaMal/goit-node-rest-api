@@ -1,4 +1,8 @@
 import jwt from "jsonwebtoken";
+import fs from "fs/promises";
+import path from "path";
+import gravatar from "gravatar";
+import jimp from "jimp";
 
 import HttpError from "../helpers/HttpError.js";
 import ctrlWrapper from "../helpers/ctrlWrapper.js";
@@ -7,19 +11,57 @@ import * as authServices from "../services/authServices.js";
 
 const { JWT_SECRET } = process.env;
 
+const avatarsPath = path.resolve("public", "avatars");
+
 const signup = ctrlWrapper(async (req, res) => {
   const { email } = req.body;
+
+  const avatarURL = gravatar.url(email);
+
   const user = await authServices.findUser({ email });
   if (user) {
     throw HttpError(409, "Email in use");
   }
 
-  const newUser = await authServices.signup(req.body);
+  const newUser = await authServices.signup(req.body, avatarURL);
 
   res.status(201).json({
     email: newUser.email,
     subscription: newUser.subscription,
+    avatarURL,
   });
+});
+
+const updateAvatar = ctrlWrapper(async (req, res) => {
+ if (!req.user) {
+    throw HttpError(401, "Not authorized");
+  };
+
+   if (!req.file) {
+    throw HttpError(400, "No file uploaded");
+  };
+
+  const { _id: owner } = req.user;
+
+  const { path: oldPath, filename } = req.file;
+  const newPath = path.join(avatarsPath, filename);
+
+  const image = await jimp.read(oldPath);
+  await image.resize(250, 250).writeAsync(oldPath);
+
+  await fs.rename(oldPath, newPath);
+
+  const avatarURL = `/avatars/${filename}`;
+
+  const result = await authServices.updateOneAvatar(
+    { _id: owner },
+    { avatarURL }
+  );
+  console.log(result);
+
+ 
+
+  res.status(200).json({ avatarURL });
 });
 
 const login = ctrlWrapper(async (req, res) => {
@@ -67,4 +109,4 @@ const logout = ctrlWrapper(async (req, res) => {
   res.json({ message: "Signout success" });
 });
 
-export default { signup, login, getCurrent, logout, };
+export default { signup, login, getCurrent, logout, updateAvatar };
