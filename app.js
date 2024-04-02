@@ -2,19 +2,20 @@ import express from "express";
 import morgan from "morgan";
 import cors from "cors";
 import mongoose from "mongoose";
+import nodemailer from "nodemailer";
 import "dotenv/config";
 
 import contactsRouter from "./routes/contactsRouter.js";
 import authRouter from "./routes/authRouter.js";
 
-const { DB_HOST, PORT = 3000 } = process.env;
+const { DB_HOST, PORT = 3000, UKR_NET_PASSWORD, UKR_NET_FROM } = process.env;
 
 const app = express();
 
 app.use(morgan("tiny"));
 app.use(cors());
 app.use(express.json());
-app.use(express.static("public"));  
+app.use(express.static("public"));
 
 app.use("/api/contacts", contactsRouter);
 app.use("/api/users", authRouter);
@@ -40,3 +41,27 @@ mongoose
     console.log(error.message);
     process.exit(1);
   });
+
+const nodemailerConfig = {
+  host: "smtp.ukr.net",
+  port: 465,
+  secure: true,
+  auth: {
+    user: UKR_NET_FROM,
+    pass: UKR_NET_PASSWORD,
+  },
+};
+
+const transport = nodemailer.createTransport(nodemailerConfig);
+
+const email = {
+  from: UKR_NET_FROM,
+  to: "padel76117@nimadir.com",
+  subject: "Test email",
+  html: "<strong>Test email</strong>",
+};
+
+transport
+  .sendMail(email)
+  .then(() => console.log("Email send sucess"))
+  .catch((error) => console.log(error.message));

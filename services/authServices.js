@@ -14,3 +14,4 @@ export const validatePassword = (password, hashPassword) => bcrypt.compare(passw
 export const updateUser = (filter, data) => User.findOneAndUpdate(filter, data);
 
 export const updateOneAvatar = (filter, updateData) => User.findOneAndUpdate(filter, updateData, { new: true });
+
